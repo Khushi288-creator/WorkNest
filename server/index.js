@@ -15,6 +15,9 @@ app.get('/',(req,res) => {
     res.send("Hello world");
 });
 
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
 mongoose.connect(process.env.MONGO_URI)
    .then(() => { console.log("MongoDB connected successfully")})
    .catch((error) => { console.log("MongoDB connection failed:", error)})
