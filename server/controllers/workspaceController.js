@@ -35,4 +35,33 @@ const getMyWorkspaces = async (req, res) => {
   }
 };
 
-module.exports = { createWorkspace, getMyWorkspaces };
+const joinWorkspace = async (req, res) => {
+  try {
+    const { inviteCode } = req.body;
+    const userId = req.user.id;
+
+    const workspace = await Workspace.findOne({ inviteCode });
+
+    if (!workspace) {
+      return res.status(404).json({ message: "Invalid invite code" });
+    }
+
+    const alreadyMember = workspace.members.some((member) => member.user.toString() === userId);
+    if (alreadyMember) {
+        return res.status(400).json({ message: "You are already a member of this workspace" });
+    }
+
+    workspace.members.push({ user: userId, role: "team_member" });
+    await workspace.save();
+
+    res.status(200).json({
+        message: "Joined workspace successfully",
+        workspace
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+module.exports = { createWorkspace, getMyWorkspaces, joinWorkspace };
