@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const express = require('express');
 const workspaceRoutes = require('./routes/workspaceRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 const app = express();
 dotenv.config();
 const port = 3000;
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/workspace', workspaceRoutes);
 app.use('/api/project', projectRoutes);
+app.use('/api/task', taskRoutes);
 
 app.get('/',(req,res) => {
     res.send("Hello world");
