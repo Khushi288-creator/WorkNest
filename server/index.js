@@ -6,6 +6,8 @@ const express = require('express');
 const workspaceRoutes = require('./routes/workspaceRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const sprintRoutes = require('./routes/sprintRoutes');
+
 const app = express();
 dotenv.config();
 const port = 3000;
@@ -16,6 +18,7 @@ app.use(cookieParser());
 app.use('/api/workspace', workspaceRoutes);
 app.use('/api/project', projectRoutes);
 app.use('/api/task', taskRoutes);
+app.use('/api/sprint', sprintRoutes);
 
 app.get('/',(req,res) => {
     res.send("Hello world");
