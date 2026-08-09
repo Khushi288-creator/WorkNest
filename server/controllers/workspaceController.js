@@ -22,4 +22,17 @@ const createWorkspace = async (req, res) => {
   }
 };
 
-module.exports = { createWorkspace };
+const getMyWorkspaces = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const workspaces = await Workspace.find({ "members.user": userId });
+
+    res.status(200).json({ workspaces });
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+module.exports = { createWorkspace, getMyWorkspaces };
