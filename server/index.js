@@ -4,6 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const workspaceRoutes = require('./routes/workspaceRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 const app = express();
 dotenv.config();
 const port = 3000;
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/workspace', workspaceRoutes);
+app.use('/api/project', projectRoutes);
 
 app.get('/',(req,res) => {
     res.send("Hello world");
