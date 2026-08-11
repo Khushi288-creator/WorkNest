@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/sendEmail');
 
 const registerUser = async (req, res) => {
   try {
@@ -12,13 +13,22 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = Math.random().toString(36).substring(2, 15);
 
     const newUser = await User.create({
       name,
       email,
-      password: hashedPassword
-  
+      password: hashedPassword,
+      verificationToken  
     });
+
+    const verifyLink = `http://localhost:3000/api/auth/verify/${verificationToken}`;
+
+    await sendEmail(
+      email,
+      "Verify your WorkNest account",
+      `<p>Hi ${name},</p><p>Please click the link below to verify your account:</p><a href="${verifyLink}">${verifyLink}</a>`
+    );
 
     res.status(201).json({      
       message: "User registered successfully", 
@@ -61,4 +71,25 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired verification link" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully! You can now log in." });
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, verifyEmail };
