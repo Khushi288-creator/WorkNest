@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
     verificationToken: {
     type: String
     },
+    resetPasswordToken: {
+    type: String
+    },
     role: {
         type: String,
         enum: ["owner", "project_manager", "team_member", "client"],

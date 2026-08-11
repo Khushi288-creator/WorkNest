@@ -92,4 +92,55 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, verifyEmail };
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "No user found with this email" });
+    }
+
+    const resetToken = Math.random().toString(36).substring(2, 15);
+    user.resetPasswordToken = resetToken;
+    await user.save();
+
+    const resetLink = `http://localhost:3000/api/auth/reset-password/${resetToken}`;
+
+    await sendEmail(
+      email,
+      "Reset your WorkNest password",
+      `<p>Click the link below to reset your password:</p><a href="${resetLink}">${resetLink}</a>`
+    );
+
+    res.status(200).json({ message: "Password reset link sent to your email" });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};  
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    const user = await User.findOne({ resetPasswordToken: token });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset link" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful. You can now log in with your new password." });
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, verifyEmail, forgotPassword, resetPassword };
