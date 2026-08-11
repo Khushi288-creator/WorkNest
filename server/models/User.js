@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    verificationToken: {
+    type: String
+    },
     role: {
         type: String,
         enum: ["owner", "project_manager", "team_member", "client"],
