@@ -22,7 +22,7 @@ const registerUser = async (req, res) => {
       verificationToken  
     });
 
-    const verifyLink = `http://localhost:3000/api/auth/verify/${verificationToken}`;
+    const verifyLink = `${process.env.SERVER_URL}/api/auth/verify/${verificationToken}`;
 
     await sendEmail(
       email,
@@ -106,8 +106,7 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordToken = resetToken;
     await user.save();
 
-    const resetLink = `http://localhost:3000/api/auth/reset-password/${resetToken}`;
-
+   const resetLink = `${process.env.SERVER_URL}/api/auth/reset-password/${resetToken}`;
     await sendEmail(
       email,
       "Reset your WorkNest password",
