@@ -143,4 +143,24 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, verifyEmail, forgotPassword, resetPassword };
+const uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar: req.file.path },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Avatar uploaded successfully",
+      avatar: user.avatar
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, verifyEmail, forgotPassword, resetPassword, uploadAvatar };
